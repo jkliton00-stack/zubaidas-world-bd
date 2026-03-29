@@ -5,74 +5,25 @@
 <title>Zubaida's World BD</title>
 
 <style>
-body {margin:0;font-family:sans-serif;background:#fff5f8;}
+body {font-family:sans-serif;margin:0;background:#fff5f8;}
+header {background:#ff4081;color:white;text-align:center;padding:15px;}
 
-header {background:#ff4081;color:white;padding:15px;text-align:center;}
+.container {display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;padding:10px;}
 
-.search {
-  width:90%;
-  padding:10px;
-  margin:10px auto;
-  display:block;
-  border-radius:20px;
-  border:none;
-}
-
-.banner {
-  background:#ff4081;
-  color:white;
-  text-align:center;
-  padding:30px;
-}
-
-.categories {
-  display:flex;
-  justify-content:space-around;
-  padding:10px;
-}
-
-.cat {
-  background:white;
-  padding:10px;
-  border-radius:10px;
-  width:30%;
-  text-align:center;
-  box-shadow:0 2px 5px rgba(0,0,0,0.1);
-}
-
-.container {
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
-  gap:10px;
-  padding:10px;
-}
-
-.product {
-  background:white;
-  padding:10px;
-  border-radius:10px;
-  text-align:center;
-}
-
+.product {background:white;padding:10px;border-radius:10px;text-align:center;}
 .product img {width:100%;border-radius:10px;}
 
-.price {color:#ff4081;font-weight:bold;}
+button {background:#ff4081;color:white;border:none;padding:8px;width:100%;margin-top:5px;}
 
-button {
-  background:#ff4081;
-  color:white;
-  border:none;
-  padding:8px;
+.cart {background:#fff;padding:10px;margin:10px;border-radius:10px;}
+
+input, select {
   width:100%;
-  margin-top:5px;
+  padding:8px;
+  margin:5px 0;
 }
 
-footer {
-  background:#222;
-  color:white;
-  text-align:center;
-  padding:10px;
-}
+footer {background:#222;color:white;text-align:center;padding:10px;}
 </style>
 
 </head>
@@ -81,58 +32,94 @@ footer {
 
 <header>
 <h2>Zubaida's World BD 👗</h2>
+<p>Cash on Delivery + bKash Available</p>
 </header>
 
-<input class="search" placeholder="Search your dress...">
+<div class="container" id="products"></div>
 
-<div class="banner">
-<h3>🔥 SALE UP TO 50% OFF</h3>
-<p>Cash on Delivery + bKash Available</p>
-</div>
+<div class="cart">
+<h3>🛒 Cart</h3>
+<div id="cartItems"></div>
+<p id="total"></p>
 
-<div class="categories">
-<div class="cat">👶 Kids</div>
-<div class="cat">👗 Women</div>
-<div class="cat">👕 Men</div>
-</div>
+<h3>📦 Order Form</h3>
+<input id="name" placeholder="Your Name">
+<input id="phone" placeholder="Phone Number">
+<input id="address" placeholder="Address">
 
-<h3 style="text-align:center;">Trending Products</h3>
+<select id="payment">
+<option>Cash on Delivery</option>
+<option>bKash</option>
+</select>
 
-<div class="container">
-
-<div class="product">
-<img src="https://via.placeholder.com/200">
-<h4>Baby Dress</h4>
-<p class="price">৳699</p>
-<button onclick="orderNow('Baby Dress',699)">Order Now</button>
-</div>
-
-<div class="product">
-<img src="https://via.placeholder.com/200">
-<h4>Stylish Kurti</h4>
-<p class="price">৳899</p>
-<button onclick="orderNow('Kurti',899)">Order Now</button>
-</div>
-
-<div class="product">
-<img src="https://via.placeholder.com/200">
-<h4>Men T-Shirt</h4>
-<p class="price">৳599</p>
-<button onclick="orderNow('T-Shirt',599)">Order Now</button>
-</div>
-
+<button onclick="placeOrder()">Place Order</button>
 </div>
 
 <footer>
 <p>📞 bKash: 01740721428</p>
-<p>Order via WhatsApp</p>
 </footer>
 
 <script>
-function orderNow(product, price){
-  let text = "I want to order: " + product + " Price: " + price + "৳";
-  window.open("https://wa.me/8801740721428?text=" + text);
+
+let products = [
+{name:"Kids Dress", price:799, img:"https://via.placeholder.com/200"},
+{name:"Women 3 Piece", price:999, img:"https://via.placeholder.com/200"},
+{name:"Men T-Shirt", price:599, img:"https://via.placeholder.com/200"}
+];
+
+let cart = [];
+
+let container = document.getElementById("products");
+
+products.forEach((p,i)=>{
+  container.innerHTML += `
+  <div class="product">
+    <img src="${p.img}">
+    <h4>${p.name}</h4>
+    <p>৳${p.price}</p>
+    <button onclick="addToCart(${i})">Add to Cart</button>
+  </div>
+  `;
+});
+
+function addToCart(i){
+  cart.push(products[i]);
+  showCart();
 }
+
+function showCart(){
+  let items = "";
+  let total = 0;
+
+  cart.forEach(p=>{
+    items += p.name + " - ৳" + p.price + "<br>";
+    total += p.price;
+  });
+
+  document.getElementById("cartItems").innerHTML = items;
+  document.getElementById("total").innerHTML = "Total: ৳" + total;
+}
+
+function placeOrder(){
+  let name = document.getElementById("name").value;
+  let phone = document.getElementById("phone").value;
+  let address = document.getElementById("address").value;
+  let payment = document.getElementById("payment").value;
+
+  let order = "Order from Zubaida's World BD%0A";
+  cart.forEach(p=>{
+    order += p.name + " - ৳" + p.price + "%0A";
+  });
+
+  order += "Total: ৳" + cart.reduce((a,b)=>a+b.price,0);
+  order += "%0AName: " + name;
+  order += "%0APhone: " + phone;
+  order += "%0AAddress: " + address;
+  order += "%0APayment: " + payment;
+
+  window.open("https://wa.me/8801740721428?text=" + order);
+}
+
 </script>
 
 </body>
